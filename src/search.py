@@ -1,6 +1,9 @@
 
 
 def find_experts(collection, topic):
+    if not topic:
+        return []
+
     # Query explanation:
     # Searches topic in: "title", "abstract"
     # Gets articles that has at least 5 citations
