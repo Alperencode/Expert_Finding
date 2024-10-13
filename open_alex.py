@@ -20,13 +20,14 @@ if __name__ == "__main__":
 
     # Connect to db and collection
     collection = mongodb.connect_db_collection(
-        connection_string="mongodb://localhost:27017/",
+        connection_string="mongodb://localhost:27018",
         db_string="openalexdb",
         collection_string="works",
     )
 
     # Determine the search topic
     topic = "artificial intelligence"
+    PARAMS['filter'] = f"display_name.search:{topic}"
 
     # Fetch works
     works = fetch.fetch_works(API_URL, PARAMS)
