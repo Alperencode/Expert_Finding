@@ -12,11 +12,13 @@ if __name__ == "__main__":
     # TO-DO:
     # - Add only experts to the database
     # - Add their unique identifier to database
+    #   - https://api.openalex.org/works/{id}
+    #   - https://api.openalex.org/authors/{id}
     # - If topic already exists in database
     #   - Search database for experts
     #   - Gather main data keys for the following expert using its unique identifier
     # - If topic does not exists, use API
-    # - Add topic and the its experts with unique identifiers to database
+    # - Add topic and its experts with their unique identifiers to database
 
     # Connect to db and collection
     collection = mongodb.connect_db_collection(
