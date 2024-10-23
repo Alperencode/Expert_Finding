@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import hashlib
 
 
 def connect_db_collection(connection_string, db_string, collection_string):
@@ -19,6 +20,7 @@ def add_topic_and_experts(collection, topic, experts):
         return
 
     collection.insert_one({
+        "_id": int(hashlib.sha1(topic.encode("utf-8")).hexdigest(), 16) % (10 ** 8),
         "topic": topic,
         "experts": experts
     })
