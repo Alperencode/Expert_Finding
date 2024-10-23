@@ -43,8 +43,8 @@ class ExpertSearchGUI:
         self.see_work_button.config(state="disabled")
 
         # Frame to wrap the Text widget and add padding
-        self.info_frame = tk.Frame(root, padx=10, pady=20)
-        self.info_frame.pack(pady=10)
+        self.info_frame = tk.Frame(root, padx=10, pady=10)
+        self.info_frame.pack()
 
         # Text widget to display expert information
         self.info_text = tk.Text(self.info_frame,  font=("Arial", 15), height=7, width=50, wrap="word")
@@ -53,6 +53,20 @@ class ExpertSearchGUI:
 
         # Configure text tag to center-align the text
         self.info_text.tag_configure("center", justify="center")
+
+        # Stats label
+        self.expert_found_stats_label = tk.Label(root, text="")
+        self.expert_found_stats_label.pack()
+
+        # Stats label
+        self.author_information_stats_label = tk.Label(root, text="")
+        self.author_information_stats_label.pack()
+
+    def update_expert_found_stats_label(self, text):
+        self.expert_found_stats_label.config(text=text)
+
+    def update_author_information_stats_label(self, text):
+        self.author_information_stats_label.config(text=text)
 
     def search_experts(self):
         # Disable the search button to prevent multiple clicks

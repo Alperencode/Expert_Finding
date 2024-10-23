@@ -23,6 +23,7 @@ def extract_experts_using_api(topic):
         abstract = False
         if works[0]["abstract_inverted_index"]:
             abstract = (topic.lower() in [key.lower() for key in works[0]["abstract_inverted_index"].keys()])
+        # Note: Will be changed
         cited = work["cited_by_count"] >= 1000
 
         # Author informations
