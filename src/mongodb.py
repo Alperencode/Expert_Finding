@@ -9,11 +9,16 @@ def connect_db_collection(connection_string, db_string, collection_string):
     return collection
 
 
-def add_to_mongodb(collection, works):
-    for work in works:
-        work_id = work['id']
-        if not collection.find_one({"id": work_id}):
-            collection.insert_one(work)
-            print(f"Inserted: {work['title']}")
-        else:
-            print(f"Already exists: {work['title']}")
+def add_topic_and_experts(collection, topic, experts):
+    topic_exists = collection.find_one({"topic": topic})
+    if topic_exists:
+        collection.update_one(
+            {"topic": topic},
+            {"$set": {"experts": experts}}
+        )
+        return
+
+    collection.insert_one({
+        "topic": topic,
+        "experts": experts
+    })

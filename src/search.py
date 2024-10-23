@@ -1,37 +1,25 @@
 
 
-def find_experts(collection, topic):
-    if not topic:
-        return []
+def extract_experts(works, topic):
+    experts = list()
+    for work in works:
+        if len(work['authorships']) <= 0:
+            continue
 
-    # Query explanation:
-    # Searches topic in: "title", "abstract"
-    # Gets articles that has at least 5 citations
-    query = {
-        "$or": [
-            {"title": {"$regex": topic, "$options": "i"}},
-            {"abstract": {"$regex": topic, "$options": "i"}},
-            {"cited_by_count": {"$gte": 10000}}
-        ]
-    }
+        # Expert filters
+        title = (topic.lower() in work["title"].lower())
+        abstract = (topic.lower() in [key.lower() for key in works[0]["abstract_inverted_index"].keys()])
+        cited = work["cited_by_count"] >= 1000
 
-    # Query operators explanation:
-    # `$or`: allows specify multiple conditions.
-    # `"$options": "i"`: Makes the regex case-insensitive
-    # `"$gte": 10000`: greater than or equal to 10.000
+        # Author informations
+        authorID = work['authorships'][0]["author"]["id"].split("/")[-1]
+        authorName = work['authorships'][0]["author"]["display_name"]
+        workID = work["id"].split("/")[-1]
 
-    works = list(collection.find(query))
-
-    experts = [
-        {
-            "name": authorship['raw_author_name'],
-            "title": work['title'],
-            "id": work['id'],
-        }
-        for work in works
-        if 'authorships' in work
-        for authorship in work['authorships']
-        if authorship["author_position"] == "first"
-    ]
-
-    return list(experts)
+        if (title or abstract) and (cited):
+            experts.append({
+                "name": authorName,
+                "id": authorID,
+                "work_id": workID
+            })
+    return experts

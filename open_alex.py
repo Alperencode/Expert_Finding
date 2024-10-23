@@ -10,21 +10,21 @@ PARAMS = {
 
 if __name__ == "__main__":
     # TO-DO:
-    # - Add only experts to the database
-    # - Add their unique identifier to database
+    # - Add only experts to the database (DONE)
+    # - Add their unique identifier to database (DONE)
     #   - https://api.openalex.org/works/{id}
     #   - https://api.openalex.org/authors/{id}
     # - If topic already exists in database
     #   - Search database for experts
     #   - Gather main data keys for the following expert using its unique identifier
-    # - If topic does not exists, use API
-    # - Add topic and its experts with their unique identifiers to database
+    # - If topic does not exists, use API (DONE)
+    # - Add topic and its experts with their unique identifiers to database (DONE)
 
     # Connect to db and collection
     collection = mongodb.connect_db_collection(
         connection_string="mongodb://localhost:27018",
         db_string="openalexdb",
-        collection_string="works",
+        collection_string="experts",
     )
 
     # Determine the search topic
@@ -33,20 +33,14 @@ if __name__ == "__main__":
 
     # Fetch works
     works = fetch.fetch_works(API_URL, PARAMS)
+    experts = dict()
     if works:
-        # Add works to db [excluding duplicates]
-        mongodb.add_to_mongodb(collection, works)
+        # Extract experts
+        experts = search.extract_experts(works, topic)
 
-        # Find experts on the selected topic
-        experts = search.find_experts(collection, topic)
-        if experts:
-            for expert in experts:
-                print(expert)
-        else:
-            print("No experts found.")
+        # Add topic and experts to MongoDB
+        mongodb.add_topic_and_experts(collection, topic, experts)
     else:
         print("No works found or an error occurred.")
 
-    print(f"\nParsed object: {len(works)}")
-    print(f"Parsed fields: {len(works[0].keys()) * len(works)}")
-    print(f"Experts found: {len(experts)}")
+    print(f"\nExperts found: {len(experts)}")
