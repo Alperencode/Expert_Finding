@@ -1,14 +1,15 @@
 
-
 def extract_experts(works, topic):
     experts = list()
     for work in works:
-        if len(work['authorships']) <= 0:
+        if not work or len(work['authorships']) <= 0:
             continue
 
         # Expert filters
         title = (topic.lower() in work["title"].lower())
-        abstract = (topic.lower() in [key.lower() for key in works[0]["abstract_inverted_index"].keys()])
+        abstract = False
+        if works[0]["abstract_inverted_index"]:
+            abstract = (topic.lower() in [key.lower() for key in works[0]["abstract_inverted_index"].keys()])
         cited = work["cited_by_count"] >= 1000
 
         # Author informations
