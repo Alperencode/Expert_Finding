@@ -24,3 +24,10 @@ def add_topic_and_experts(collection, topic, experts):
         "topic": topic,
         "experts": experts
     })
+
+
+def get_topic_experts_using_db(collection, topic):
+    topic = collection.find_one({"topic": topic})
+    if topic:
+        return topic["experts"]
+    return None

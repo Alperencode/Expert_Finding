@@ -1,4 +1,4 @@
-from src import mongodb, fetch, search
+from src import mongodb, search
 from src.gui import ExpertSearchGUI
 import tkinter as tk
 from tkinter import messagebox
@@ -16,30 +16,27 @@ COLLECTION = mongodb.connect_db_collection(
 def search_experts_callback(topic):
     def fetch_and_update():
         global EXPERTS
-        # Fetch works from OpenAlex API
-        PARAMS = {
-            "sort": "cited_by_count:DESC",
-            "per_page": 50,
-            "filter": f"display_name.search:{topic}"
-        }
-        works = fetch.fetch_works("https://api.openalex.org/works", PARAMS)
 
-        if works:
-            # Find experts
-            EXPERTS = search.extract_experts(works, topic)
-            if not EXPERTS:
-                root.after(0, lambda: messagebox.showerror("Not Found", "Couldn't find any expert for this topic"))
-                root.after(0, lambda: gui.update_expert_combobox([]))
-                return
+        # Search database for the topic
+        EXPERTS = mongodb.get_topic_experts_using_db(COLLECTION, topic)
 
-            # Add experts to MongoDB
-            mongodb.add_topic_and_experts(COLLECTION, topic, EXPERTS)
+        # If topic doesn't exists in database, use API
+        if not EXPERTS:
+            print("Topic doesn't exists in database, using API...")
+            EXPERTS = search.extract_experts_using_api(topic)
+            if EXPERTS:
+                # Add experts to database
+                mongodb.add_topic_and_experts(COLLECTION, topic, EXPERTS)
+
+        # If experts found
+        if EXPERTS:
+            # Update combobox with expert names
             expert_names = [expert['name'] for expert in EXPERTS]
-
-            # Update the combobox
             root.after(0, lambda: gui.update_expert_combobox(expert_names))
+
+        # If no experts found
         else:
-            root.after(0, lambda: messagebox.showerror("Error", "No works found or an error occurred."))
+            root.after(0, lambda: messagebox.showerror("Not Found", "Couldn't find any expert for this topic"))
             root.after(0, lambda: gui.update_expert_combobox([]))
 
     # Start the fetching process in a separate thread
@@ -69,8 +66,6 @@ def display_expert_info_callback(selected_expert_name):
 
 if __name__ == "__main__":
     # TO-DO:
-    # * Check MongoDB first for the topic
-    # * If not, then use API
     # * Improve Author Information Display
     # * Improve expert finding formula
 

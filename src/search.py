@@ -1,6 +1,19 @@
+from .fetch import fetch_works
 
-def extract_experts(works, topic):
+
+def extract_experts_using_api(topic):
     experts = list()
+
+    # Fetch works from OpenAlex API
+    PARAMS = {
+        "sort": "cited_by_count:DESC",
+        "per_page": 50,
+        "filter": f"display_name.search:{topic}"
+    }
+    works = fetch_works("https://api.openalex.org/works", PARAMS)
+    if not works:
+        return experts
+
     for work in works:
         if not work or len(work['authorships']) <= 0:
             continue
