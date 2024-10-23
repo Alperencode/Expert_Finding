@@ -28,11 +28,19 @@ class ExpertSearchGUI:
         self.expert_combobox = ttk.Combobox(root)
         self.expert_combobox.bind("<<ComboboxSelected>>", self.display_expert_info)
         self.expert_combobox.pack(pady=5)
-        self.expert_combobox.config(state="disabled")  # Disabled initially
+        self.expert_combobox.config(state="disabled")
 
-        # Label to display expert information
-        self.info_label = tk.Label(root, text="")
-        self.info_label.pack(pady=10)
+        # Frame to wrap the Text widget and add padding
+        self.info_frame = tk.Frame(root, padx=10, pady=20)
+        self.info_frame.pack(pady=10)
+
+        # Text widget to display expert information
+        self.info_text = tk.Text(self.info_frame,  font=("Arial", 15), height=7, width=50, wrap="word")
+        self.info_text.pack(expand=True)
+        self.info_text.config(state="disabled")
+
+        # Configure text tag to center-align the text
+        self.info_text.tag_configure("center", justify="center")
 
     def search_experts(self):
         # Disable the search button to prevent multiple clicks
@@ -40,7 +48,8 @@ class ExpertSearchGUI:
         topic = self.topic_entry.get().strip()
         if not topic:
             messagebox.showwarning("Warning", "Please enter a topic.")
-            self.search_button.config(state="normal")  # Re-enable button if no topic is entered
+            # Re-enable button if no topic is entered
+            self.search_button.config(state="normal")
             return
         self.search_experts_callback(topic)
 
@@ -51,7 +60,8 @@ class ExpertSearchGUI:
         self.display_expert_info_callback(selected_expert_name)
 
     def update_expert_combobox(self, expert_names):
-        self.expert_combobox.config(state="normal")  # Enable combobox when data is available
+        # Enable combobox when data is available
+        self.expert_combobox.config(state="normal")
         self.expert_combobox['values'] = expert_names
         self.expert_combobox.set('')
 
@@ -59,4 +69,12 @@ class ExpertSearchGUI:
         self.search_button.config(state="normal")
 
     def update_expert_info_label(self, expert_info):
-        self.info_label.config(text=expert_info)
+        # Enable the text widget to insert the new expert info, then make it read-only again
+        self.info_text.config(state="normal")
+        self.info_text.delete(1.0, tk.END)
+        self.info_text.insert(tk.END, expert_info)
+
+        # Apply the 'center' tag to center-align all the text
+        self.info_text.tag_add("center", 1.0, "end")
+
+        self.info_text.config(state="disabled")
