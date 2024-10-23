@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import threading
 
 
 class ExpertSearchGUI:
@@ -7,6 +8,8 @@ class ExpertSearchGUI:
         self.root = root
         self.search_experts_callback = search_experts_callback
         self.display_expert_info_callback = display_expert_info_callback
+        self.see_expert_url = ""
+        self.see_work_url = ""
 
         root.title("Expert Search")
 
@@ -30,6 +33,15 @@ class ExpertSearchGUI:
         self.expert_combobox.pack(pady=5)
         self.expert_combobox.config(state="disabled")
 
+        # Buttons to see expert and expert's work
+        self.see_expert_button = tk.Button(root, text="See Expert", command=self.see_expert)
+        self.see_expert_button.pack(pady=5)
+        self.see_expert_button.config(state="disabled")
+
+        self.see_work_button = tk.Button(root, text="See Expert's Work", command=self.see_expert_work)
+        self.see_work_button.pack(pady=5)
+        self.see_work_button.config(state="disabled")
+
         # Frame to wrap the Text widget and add padding
         self.info_frame = tk.Frame(root, padx=10, pady=20)
         self.info_frame.pack(pady=10)
@@ -51,7 +63,7 @@ class ExpertSearchGUI:
             # Re-enable button if no topic is entered
             self.search_button.config(state="normal")
             return
-        self.search_experts_callback(topic)
+        threading.Thread(target=self.search_experts_callback, args=(topic,), daemon=True).start()
 
     def display_expert_info(self, event):
         selected_expert_name = self.expert_combobox.get()
@@ -78,3 +90,21 @@ class ExpertSearchGUI:
         self.info_text.tag_add("center", 1.0, "end")
 
         self.info_text.config(state="disabled")
+
+    def see_expert(self):
+        threading.Thread(target=self.open_url, args=(self.see_expert_url,), daemon=True).start()
+
+    def see_expert_work(self):
+        threading.Thread(target=self.open_url, args=(self.see_work_url,), daemon=True).start()
+
+    def set_see_expert_url(self, url):
+        self.see_expert_url = url
+        self.see_expert_button.config(state="normal")
+
+    def set_see_work_url(self, url):
+        self.see_work_url = url
+        self.see_work_button.config(state="normal")
+
+    def open_url(self, url):
+        import webbrowser
+        webbrowser.open(url)

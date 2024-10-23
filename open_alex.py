@@ -29,6 +29,7 @@ def search_experts_callback(topic):
             EXPERTS = search.extract_experts(works, topic)
             if not EXPERTS:
                 root.after(0, lambda: messagebox.showerror("Not Found", "Couldn't find any expert for this topic"))
+                root.after(0, lambda: gui.update_expert_combobox([]))
                 return
 
             # Add experts to MongoDB
@@ -39,6 +40,7 @@ def search_experts_callback(topic):
             root.after(0, lambda: gui.update_expert_combobox(expert_names))
         else:
             root.after(0, lambda: messagebox.showerror("Error", "No works found or an error occurred."))
+            root.after(0, lambda: gui.update_expert_combobox([]))
 
     # Start the fetching process in a separate thread
     threading.Thread(target=fetch_and_update).start()
@@ -50,6 +52,10 @@ def display_expert_info_callback(selected_expert_name):
         expert = next((expert for expert in EXPERTS if expert['name'] == selected_expert_name), None)
 
         if expert:
+            # Update hyperlink buttons
+            root.after(0, lambda: gui.set_see_expert_url(f"https://openalex.org/authors/{expert['id']}"))
+            root.after(0, lambda: gui.set_see_work_url(f"https://openalex.org/works/{expert['work_id']}"))
+
             expert_info = f"Name: {expert['name']}\nID: {expert['id']}\nWork ID: {expert['work_id']}"
         else:
             expert_info = "Expert not found."
