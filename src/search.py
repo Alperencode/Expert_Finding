@@ -17,7 +17,6 @@ def extract_experts_using_api(topic):
     # First pass: calculate the average cited_by_count
     total_citations = 0
     valid_works_count = 0
-
     for work in works:
         if work and 'cited_by_count' in work:
             total_citations += work['cited_by_count']
@@ -43,8 +42,13 @@ def extract_experts_using_api(topic):
         authorName = work['authorships'][0]["author"]["display_name"]
         workID = work["id"].split("/")[-1]
 
-        # Apply filters to identify experts
-        if (title_match or abstract_match) and cited_above_average:
+        # Filter out experts using basic parameters
+        if not (title_match or abstract_match) or (not cited_above_average):
+            continue
+
+        # If author passes the first check, apply more advanced filter
+        if is_author_expert(authorID, topic):
+            # Check authors for more advanced expert filter
             experts.append({
                 "name": authorName,
                 "id": authorID,
@@ -52,3 +56,8 @@ def extract_experts_using_api(topic):
             })
 
     return experts
+
+
+def is_author_expert(author_id, topic):
+    # Implement more advanced expert check
+    return True
