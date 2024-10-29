@@ -17,7 +17,7 @@ COLLECTION = mongodb.connect_db_collection(
 def search_experts_callback(topic):
     def fetch_and_update():
         start_time = time.time()
-        root.after(0, lambda: gui.update_expert_found_stats_label(
+        root.after(0, gui.update_expert_found_stats_label(
             "Experts found in: calculating..."
         ))
         global EXPERTS
@@ -37,30 +37,30 @@ def search_experts_callback(topic):
         if EXPERTS:
             # Update combobox with expert names
             expert_names = [expert['name'] for expert in EXPERTS]
-            root.after(0, lambda: gui.update_expert_combobox(expert_names))
+            root.after(0, gui.update_expert_combobox(expert_names))
             end_time = time.time()
 
         # If no experts found
         else:
             end_time = time.time()
-            root.after(0, lambda: messagebox.showerror("Not Found", "Couldn't find any expert for this topic"))
-            root.after(0, lambda: gui.update_expert_combobox([]))
+            root.after(0, messagebox.showerror("Not Found", "Couldn't find any expert for this topic"))
+            root.after(0, gui.update_expert_combobox([]))
 
         # Update expert found stats label
         elapsed_time = end_time - start_time
-        root.after(0, lambda: gui.update_expert_found_stats_label(
+        root.after(0, gui.update_expert_found_stats_label(
             f"Experts found in: {elapsed_time:.2f} seconds"
         ))
 
     # Start the fetching process in a separate thread
-    threading.Thread(target=fetch_and_update).start()
+    threading.Thread(target=fetch_and_update, daemon=True).start()
 
 
 def display_expert_info_callback(selected_expert_name):
     def fetch_expert_info():
         start_time = time.time()
-        root.after(0, lambda: gui.update_expert_info_label("Fetching author information..."))
-        root.after(0, lambda: gui.update_author_information_stats_label(
+        root.after(0, gui.update_expert_info_label("Fetching author information..."))
+        root.after(0, gui.update_author_information_stats_label(
             "Author information fetched in: calculating..."
         ))
         # Fetch expert information from the list (or database if needed)
@@ -73,25 +73,25 @@ def display_expert_info_callback(selected_expert_name):
             expert['author_h_index'] = author['summary_stats']['h_index']
 
             # Update hyperlink buttons
-            root.after(0, lambda: gui.set_see_expert_url(f"https://openalex.org/authors/{expert['id']}"))
-            root.after(0, lambda: gui.set_see_work_url(f"https://openalex.org/works/{expert['work_id']}"))
+            root.after(0, gui.set_see_expert_url(f"https://openalex.org/authors/{expert['id']}"))
+            root.after(0, gui.set_see_work_url(f"https://openalex.org/works/{expert['work_id']}"))
 
             expert_info = utils.create_expert_display_string(expert)
         else:
             expert_info = "Expert not found."
 
         # Update the info label in the main UI thread
-        root.after(0, lambda: gui.update_expert_info_label(expert_info))
+        root.after(0, gui.update_expert_info_label(expert_info))
 
         # Update author information stats label
         end_time = time.time()
         elapsed_time = end_time - start_time
-        root.after(0, lambda: gui.update_author_information_stats_label(
+        root.after(0, gui.update_author_information_stats_label(
             f"Author information fetched in: {elapsed_time:.2f} seconds"
         ))
 
     # Start the fetching process in a separate thread
-    threading.Thread(target=fetch_expert_info).start()
+    threading.Thread(target=fetch_expert_info, daemon=True).start()
 
 
 if __name__ == "__main__":
