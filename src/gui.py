@@ -9,7 +9,6 @@ class ExpertSearchGUI:
         self.search_experts_callback = search_experts_callback
         self.display_expert_info_callback = display_expert_info_callback
         self.see_expert_url = ""
-        self.see_work_url = ""
 
         root.title("Expert Search")
 
@@ -33,21 +32,17 @@ class ExpertSearchGUI:
         self.expert_combobox.pack(pady=5)
         self.expert_combobox.config(state="disabled")
 
-        # Buttons to see expert and expert's work
+        # Button to see expert
         self.see_expert_button = tk.Button(root, text="See Expert", command=self.see_expert)
         self.see_expert_button.pack(pady=5)
         self.see_expert_button.config(state="disabled")
-
-        self.see_work_button = tk.Button(root, text="See Expert's Work", command=self.see_expert_work)
-        self.see_work_button.pack(pady=5)
-        self.see_work_button.config(state="disabled")
 
         # Frame to wrap the Text widget and add padding
         self.info_frame = tk.Frame(root, padx=10, pady=10)
         self.info_frame.pack()
 
         # Text widget to display expert information
-        self.info_text = tk.Text(self.info_frame,  font=("Arial", 15), height=7, width=50, wrap="word")
+        self.info_text = tk.Text(self.info_frame,  font=("Arial", 15), height=10, width=50, wrap="word")
         self.info_text.pack(expand=True)
         self.info_text.config(state="disabled")
 
@@ -58,15 +53,8 @@ class ExpertSearchGUI:
         self.expert_found_stats_label = tk.Label(root, text="")
         self.expert_found_stats_label.pack()
 
-        # Stats label
-        self.author_information_stats_label = tk.Label(root, text="")
-        self.author_information_stats_label.pack()
-
     def update_expert_found_stats_label(self, text):
         self.expert_found_stats_label.config(text=text)
-
-    def update_author_information_stats_label(self, text):
-        self.author_information_stats_label.config(text=text)
 
     def search_experts(self):
         # Disable the search button to prevent multiple clicks
@@ -108,16 +96,9 @@ class ExpertSearchGUI:
     def see_expert(self):
         threading.Thread(target=self.open_url, args=(self.see_expert_url,), daemon=True).start()
 
-    def see_expert_work(self):
-        threading.Thread(target=self.open_url, args=(self.see_work_url,), daemon=True).start()
-
     def set_see_expert_url(self, url):
         self.see_expert_url = url
         self.see_expert_button.config(state="normal")
-
-    def set_see_work_url(self, url):
-        self.see_work_url = url
-        self.see_work_button.config(state="normal")
 
     def open_url(self, url):
         import webbrowser

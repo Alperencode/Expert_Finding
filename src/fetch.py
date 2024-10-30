@@ -1,8 +1,8 @@
 import requests
 
 
-def fetch_works(search_url, params):
-    response = requests.get(search_url, params=params)
+def fetch_works(params):
+    response = requests.get("https://api.openalex.org/works", params=params)
     if response.status_code == 200:
         return response.json()["results"]
     else:
@@ -10,10 +10,10 @@ def fetch_works(search_url, params):
         return []
 
 
-def fetch_author(authorID):
-    response = requests.get(f"https://api.openalex.org/authors/{authorID}")
+def fetch_author(author_id):
+    url = f"https://api.openalex.org/authors/{author_id}"
+    response = requests.get(url)
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"Error: {response.status_code}")
-        return []
+        return None
