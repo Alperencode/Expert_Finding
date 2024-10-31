@@ -10,7 +10,7 @@ def extract_experts_using_api(topic):
     PARAMS = {
         "sort": "cited_by_count:DESC",
         "per_page": 50,
-        "filter": f"display_name.search:{topic}"
+        "filter": f"default.search:{topic}"
     }
     works = fetch_works(PARAMS)
     if not works:
@@ -38,9 +38,10 @@ def extract_experts_using_api(topic):
             continue
 
         # Expert filters
-        title_match = (topic.lower() in work["title"].lower())
-        abstract_match = False
-        if work.get("abstract_inverted_index"):
+        abstract_match = title_match = False
+        if work["title"]:
+            title_match = (topic.lower() in work["title"].lower())
+        if work["abstract_inverted_index"]:
             abstract_match = any(topic.lower() in word.lower() for word in work["abstract_inverted_index"])
         cited_above_average = work["cited_by_count"] >= avg_cited_by_count
         relevance_above_average = work["relevance_score"] >= avg_relevance
