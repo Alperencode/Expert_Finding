@@ -78,14 +78,6 @@ def display_expert_info_callback(selected_expert_name):
 
 
 if __name__ == "__main__":
-    # TO-DO:
-    # * Add filters to UI to let user use search filters
-    #   * Min publication year
-    #   * Article language
-    #   * Expert country (country_code)
-    # * Remove tkinter UI
-    # * Implement FastAPI
-
     # Set up the GUI
     root = tk.Tk()
     gui = ExpertSearchGUI(root, search_experts_callback, display_expert_info_callback)

@@ -101,7 +101,7 @@ def sort_experts(authors, topic, notable_institutions=None, num_recent_years=2):
         # Author data
         country_code = author["author_country_code"]
         author_h_index = works_count = None
-        cited_by_count = affiliation = None
+        cited_by_count = institution = None
 
         if author_data['summary_stats']['h_index']:
             author_h_index = author_data['summary_stats']['h_index']
@@ -109,8 +109,10 @@ def sort_experts(authors, topic, notable_institutions=None, num_recent_years=2):
             works_count = author_data['works_count']
         if author_data['cited_by_count']:
             cited_by_count = author_data['cited_by_count']
-        if author_data['affiliations']:
-            affiliation = author_data['affiliations'][0]['institution']['display_name']
+        if author_data['last_known_institutions']:
+            institution = author_data['last_known_institutions'][0]['display_name']
+        if author_data['orcid']:
+            orcid = author_data['orcid'].split("/")[-1]
 
         # Initialize the score for the author
         score = 1
@@ -148,8 +150,9 @@ def sort_experts(authors, topic, notable_institutions=None, num_recent_years=2):
             "h_index": author_h_index,
             "works_count": works_count,
             "cited_by_count": cited_by_count,
-            "affiliation": affiliation,
-            "country_code": country_code
+            "institution": institution,
+            "country_code": country_code,
+            "orcid": orcid
         }
 
     # Sort authors by score in descending order
@@ -163,8 +166,9 @@ def sort_experts(authors, topic, notable_institutions=None, num_recent_years=2):
         "expert_h_index": data["h_index"],
         "expert_works_count": data["works_count"],
         "expert_cited_by_count": data["cited_by_count"],
-        "expert_affiliation": data["affiliation"],
-        "expert_country_code": data["country_code"]
+        "expert_institution": data["institution"],
+        "expert_country_code": data["country_code"],
+        "expert_orcid": data["orcid"]
     } for name, data in sorted_authors]
 
     return sorted_experts
