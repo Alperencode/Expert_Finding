@@ -8,10 +8,43 @@ def create_expert_display_string(expert):
         f"Expert's h index: {expert['expert_h_index']}\n" +
         f"Expert's works count: {expert['expert_works_count']}\n" +
         f"Expert's Cited by Count: {expert['expert_cited_by_count']}\n" +
-        f"Expert's affiliation: {expert['expert_affiliation']}\n" +
+        f"Expert's institution: {expert['expert_institution']}\n" +
         f"Expert's country code: {expert['expert_country_code']}\n" +
-        f"Expert score: {expert['expert_score']}\n"
+        f"Expert' orcid: {expert['expert_orcid']}\n" +
+        f"Expert score: {round(expert['expert_score'], 2)}\n"
     )
+
+
+def generate_expert_info(expert):
+    return {
+        "expert_name": expert["expert_name"],
+        "expert_id": expert["expert_id"],
+        "expert_institution": expert["expert_institution"],
+        "expert_country_code": expert["expert_country_code"],
+        "expert_score": round(expert['expert_score'], 2),
+        "expert_h_index": expert["expert_h_index"],
+        "expert_works_count": expert["expert_works_count"],
+        "expert_cited_by_count": expert["expert_cited_by_count"],
+        "expert_orcid": f"https://orcid.org/{expert['expert_orcid']}",
+        "expert_url": f"https://openalex.org/authors/{expert['expert_id']}",
+    }
+
+
+def generate_author_info(author):
+    result = dict()
+    result["author_name"] = author["display_name"]
+    result["author_id"] = author["id"].split("/")[-1]
+    if author["summary_stats"]:
+        result["author_h_index"] = author['summary_stats']['h_index']
+    result["author_works_count"] = author["works_count"]
+    result['author_cited_by_count'] = author['cited_by_count']
+    if author['last_known_institutions']:
+        result["author_institution"] = author["last_known_institutions"][0]["display_name"]
+    if author['topics']:
+        result["author_topics"] = [topic['display_name'] for topic in author['topics']]
+    if author['orcid']:
+        result["author_orcid"] = author['orcid']
+    return result
 
 
 def get_recent_years(num_years=2):

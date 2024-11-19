@@ -31,3 +31,7 @@ def get_topic_experts_using_db(collection, topic):
     if topic:
         return topic["experts"]
     return None
+
+
+def get_all_topics(collection):
+    return list(collection.find({}, {"_id": 0, "topic": 1, "experts": 1}))
