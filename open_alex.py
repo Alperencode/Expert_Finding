@@ -83,10 +83,8 @@ if __name__ == "__main__":
     #   * Min publication year
     #   * Article language
     #   * Expert country (country_code)
-    # Advanced query:
-    # https://api.openalex.org/works?filter=default.search:migren|ba%C5%9F+a%C4%9Fr%C4%B1s%C4%B1&select=doi,title,display_name,relevance_score,publication_year,publication_date,primary_location,open_access,authorships,cited_by_count,biblio,primary_topic,abstract_inverted_index,id
-    # Spaces: `+`
-    # Topics: `,`
+    # * Remove tkinter UI
+    # * Implement FastAPI
 
     # Set up the GUI
     root = tk.Tk()

@@ -7,10 +7,14 @@ def extract_experts_using_api(topic):
     experts = list()
 
     # Fetch works from OpenAlex API
+    query_topic = "|".join(t.strip().replace(" ", "+") for t in topic.split(","))
     PARAMS = {
+        "filter": f"default.search:{query_topic}",
+        "select": "doi,title,display_name,relevance_score,publication_year," +
+        "publication_date,primary_location,open_access,authorships," +
+        "cited_by_count,biblio,primary_topic,abstract_inverted_index,id",
         "sort": "cited_by_count:DESC",
-        "per_page": 50,
-        "filter": f"default.search:{topic}"
+        "per_page": 50
     }
     works = fetch_works(PARAMS)
     if not works:
@@ -38,11 +42,13 @@ def extract_experts_using_api(topic):
             continue
 
         # Expert filters
-        abstract_match = title_match = False
-        if work["title"]:
-            title_match = (topic.lower() in work["title"].lower())
-        if work["abstract_inverted_index"]:
-            abstract_match = any(topic.lower() in word.lower() for word in work["abstract_inverted_index"])
+        topics = [t.strip() for t in topic.split(",")]
+        title_match = any(t.lower() in work["title"].lower() for t in topics) if work["title"] else False
+        abstract_match = any(
+            t.lower() in word.lower()
+            for t in topics
+            for word in work["abstract_inverted_index"]
+        ) if work["abstract_inverted_index"] else False
         cited_above_average = work["cited_by_count"] >= avg_cited_by_count
         relevance_above_average = work["relevance_score"] >= avg_relevance
 
