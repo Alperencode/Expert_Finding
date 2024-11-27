@@ -1,15 +1,15 @@
 from .fetch import fetch_works, fetch_author
-from .utils import get_recent_years
+from .utils import get_recent_years, parse_topics
 from collections import defaultdict
 
 
-def extract_experts_using_api(topic):
+def extract_experts_using_api(topic, filters=None):
     experts = list()
 
     # Fetch works from OpenAlex API
-    query_topic = "|".join(t.strip().replace(" ", "+") for t in topic.split(","))
+    query_topic = parse_topics(topic)
     PARAMS = {
-        "filter": f"default.search:{query_topic}",
+        "filter": f"default.search:{query_topic}" + filters,
         "select": "doi,title,display_name,relevance_score,publication_year," +
         "publication_date,primary_location,open_access,authorships," +
         "cited_by_count,biblio,primary_topic,abstract_inverted_index,id",

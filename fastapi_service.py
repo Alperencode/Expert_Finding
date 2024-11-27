@@ -14,9 +14,17 @@ COLLECTION = mongodb.connect_db_collection(
 app = FastAPI()
 
 
-# Request model for searching experts
+# Filter model
+class SearchFilters(BaseModel):
+    expert_country: str = None
+    article_language: str = None
+    min_publication_year: int = None
+
+
+# Request model
 class SearchRequest(BaseModel):
     topic: str
+    filters: SearchFilters = None
 
 
 @app.post("/search")
@@ -29,9 +37,14 @@ async def search_experts(request: SearchRequest):
 
     # Get topic from request
     topic = request.topic
+    filters = None
+    fined_filters = ""
+    if request.filters:
+        filters = utils.parse_filters_into_dict(request.filters)
+        fined_filters = utils.parse_filters(request.filters)
 
     # Check if topic exists in the database
-    experts = mongodb.get_topic_experts_using_db(COLLECTION, topic)
+    experts = mongodb.get_topic_experts_using_db(COLLECTION, topic, filters)
     result = {
         "source": "database",
         "topic": topic,
@@ -41,12 +54,12 @@ async def search_experts(request: SearchRequest):
     # If topic doesn't exist, fetch from API and store
     if not experts:
         print("Topic doesn't exist in database, using API...")
-        experts = search.extract_experts_using_api(topic)
+        experts = search.extract_experts_using_api(topic, fined_filters)
         if experts:
             # Save the topic and experts into the database
             result["experts"] = experts
             result["source"] = "api"
-            mongodb.add_topic_and_experts(COLLECTION, topic, experts)
+            mongodb.add_topic_and_experts(COLLECTION, topic, experts, filters)
         else:
             raise HTTPException(status_code=404, detail="Couldn't find any experts for this topic.")
 

@@ -1,4 +1,5 @@
 import time
+from fastapi_service import SearchFilters
 
 
 def create_expert_display_string(expert):
@@ -21,7 +22,6 @@ def generate_expert_info(expert):
         "expert_id": expert["expert_id"],
         "expert_institution": expert["expert_institution"],
         "expert_country_code": expert["expert_country_code"],
-        "expert_score": round(expert['expert_score'], 2),
         "expert_h_index": expert["expert_h_index"],
         "expert_works_count": expert["expert_works_count"],
         "expert_cited_by_count": expert["expert_cited_by_count"],
@@ -50,3 +50,34 @@ def generate_author_info(author):
 def get_recent_years(num_years=2):
     current_year = time.localtime().tm_year
     return [current_year - i for i in range(num_years)]
+
+
+def parse_filters(filters):
+    if not filters:
+        return ""
+    fined_filters = []
+
+    if 'expert_country' in filters:
+        fined_filters.append(f"authorships.countries:{filters['expert_country']}")
+
+    if 'article_language' in filters:
+        fined_filters.append(f"language:{filters['article_language']}")
+
+    if 'min_publication_year' in filters:
+        fined_filters.append(f"publication_year:>{filters['min_publication_year']}")
+
+    fined_filters = ",".join(fined_filters)
+
+    return f",{fined_filters}" if fined_filters else ""
+
+
+def parse_filters_into_dict(filters: SearchFilters):
+    return {
+        "expert_country": filters.expert_country,
+        "article_language": filters.article_language,
+        "min_publication_year": filters.min_publication_year,
+    }
+
+
+def parse_topics(topics):
+    return "|".join(t.strip().replace(" ", "+") for t in topics.split(","))
