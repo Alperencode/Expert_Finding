@@ -65,9 +65,6 @@ def parse_filters(filters):
     if 'min_publication_year' in filters:
         fined_filters.append(f"publication_year:>{filters['min_publication_year']}")
 
-    if 'min_publication_year' in filters:
-        fined_filters.append(f"publication_year:>{filters['min_publication_year']}")
-
     fined_filters = ",".join(fined_filters)
 
     return f",{fined_filters}" if fined_filters else ""
