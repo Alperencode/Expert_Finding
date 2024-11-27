@@ -14,10 +14,17 @@ COLLECTION = mongodb.connect_db_collection(
 app = FastAPI()
 
 
-# Request model for searching experts
+# Filter model
+class SearchFilters(BaseModel):
+    expert_country: str = None
+    article_language: str = None
+    min_publication_year: int = None
+
+
+# Request model
 class SearchRequest(BaseModel):
     topic: str
-    filters: dict = None
+    filters: SearchFilters = None
 
 
 @app.post("/search")
@@ -33,7 +40,7 @@ async def search_experts(request: SearchRequest):
     filters = None
     fined_filters = ""
     if request.filters:
-        filters = request.filters
+        filters = utils.parse_filters_into_dict(request.filters)
         fined_filters = utils.parse_filters(request.filters)
 
     # Check if topic exists in the database

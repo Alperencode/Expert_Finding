@@ -1,4 +1,5 @@
 import time
+from fastapi_service import SearchFilters
 
 
 def create_expert_display_string(expert):
@@ -68,6 +69,14 @@ def parse_filters(filters):
     fined_filters = ",".join(fined_filters)
 
     return f",{fined_filters}" if fined_filters else ""
+
+
+def parse_filters_into_dict(filters: SearchFilters):
+    return {
+        "expert_country": filters.expert_country,
+        "article_language": filters.article_language,
+        "min_publication_year": filters.min_publication_year,
+    }
 
 
 def parse_topics(topics):
