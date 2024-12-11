@@ -23,7 +23,7 @@ def search_experts_callback(topic):
         global EXPERTS
 
         # Search database for the topic
-        EXPERTS = mongodb.get_topic_experts_using_db(COLLECTION, topic)
+        EXPERTS = mongodb.get_topic_experts_using_db(COLLECTION, topic, "")
 
         # If topic doesn't exists in database, use API
         if not EXPERTS:
