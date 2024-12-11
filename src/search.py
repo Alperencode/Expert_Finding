@@ -101,7 +101,7 @@ def sort_experts(authors, topic, notable_institutions=None, num_recent_years=2):
         # Author data
         country_code = author["author_country_code"]
         author_h_index = works_count = None
-        cited_by_count = institution = None
+        cited_by_count = institution = orcid = None
 
         if author_data['summary_stats']['h_index']:
             author_h_index = author_data['summary_stats']['h_index']
